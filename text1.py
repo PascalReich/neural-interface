@@ -1,3 +1,5 @@
+import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 from pygame.locals import *
 import math
@@ -21,22 +23,23 @@ class MySprite(pygame.sprite.Sprite):
         self.x = x
         self.y = y
         super(MySprite, self).__init__()
-        self.images = []
-        self.images.append(pygame.image.load('resources/images/pacman0.png'))
-        self.images.append(pygame.image.load('resources/images/pacman0.png'))
-        self.images.append(pygame.image.load('resources/images/pacman1.png'))
-        self.images.append(pygame.image.load('resources/images/pacman1.png'))
-        self.images.append(pygame.image.load('resources/images/pacman2.png'))
-        self.images.append(pygame.image.load('resources/images/pacman2.png'))
+        self.images = [
+                       pygame.image.load('resources/images/pacman0.png'),
+                       pygame.image.load('resources/images/pacman1.png'),
+                       pygame.image.load('resources/images/pacman2.png')
+                       ]
         self.index = 0
         self.image = self.images[self.index]
         self.rect = pygame.Rect(x, y, 20, 20)
 
     def update(self):
-        self.index += 1
-        if self.index >= len(self.images):
-            self.index = 0
-        self.image = self.images[self.index]
+        self.index += 0.5
+        self.image = self.images[int(self.index) % 3]
+
+    def next_image(self):
+        for img in self.images:
+            yield img
+            yield img
 
 
 class blinky1(pygame.sprite.Sprite):
@@ -139,7 +142,7 @@ while 1:
     playerrot = pygame.transform.rotate(sprite.image, angle)
     playerpos1 = (posx, posy)
     playerpos2 = (
-    posx + pygame.Surface.get_size(sprite.image)[0] // 2, posy + pygame.Surface.get_size(sprite.image)[1] // 2)
+        posx + pygame.Surface.get_size(sprite.image)[0] // 2, posy + pygame.Surface.get_size(sprite.image)[1] // 2)
     # playerpos1 = (playerpos[0]-playerrot.get_rect().width//2, playerpos[1]-playerrot.get_rect().height//2)
     screen.blit(playerrot, playerpos1)
 
@@ -155,7 +158,7 @@ while 1:
     clydepos = (posx4, posy4)
     screen.blit(clyde.image, clydepos)
 
-    pygame.Surface.set_at(backdrop, (playerpos2), Color('yellow'))
+    pygame.Surface.set_at(backdrop, playerpos2, Color('yellow'))
 
     pygame.display.update()
 
@@ -163,6 +166,7 @@ while 1:
 
         if event.type == pygame.QUIT:
             pygame.quit()
+            print(f"{sprite.index*2} frames")
             exit(0)
 
         if event.type == pygame.KEYDOWN and not keydown:
