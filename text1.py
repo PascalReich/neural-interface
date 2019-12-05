@@ -139,7 +139,16 @@ while 1:
     clydepos = (posx4, posy4)
     screen.blit(clyde.image, clydepos)
     
-    pygame.Surface.set_at(backdrop, (playerpos2), Color('yellow'))
+    #pygame.Surface.set_at(backdrop, (playerpos2), Color('yellow'))
+    colorgetRIGHT = pygame.Surface.get_at(movemap, ((playerpos2[0] + 30, playerpos2[1])))
+    colorgetTOP = pygame.Surface.get_at(movemap, ((playerpos2[0], playerpos2[1] - 30)))
+    colorgetLEFT = pygame.Surface.get_at(movemap, ((playerpos2[0] - 30, playerpos2[1])))
+    colorgetBOTTOM = pygame.Surface.get_at(movemap, ((playerpos2[0], playerpos2[1] + 30)))
+    
+    colorgetTOPRIGHT = pygame.Surface.get_at(movemap, ((playerpos2[0] + 25, playerpos2[1] - 25)))
+    colorgetTOPLEFT = pygame.Surface.get_at(movemap, ((playerpos2[0] - 25, playerpos2[1] - 25)))
+    colorgetBOTTOMLEFT = pygame.Surface.get_at(movemap, ((playerpos2[0] - 25, playerpos2[1] + 25)))
+    colorgetBOTTOMRIGHT = pygame.Surface.get_at(movemap, ((playerpos2[0] + 25, playerpos2[1] + 25)))
     
     pygame.display.update()
 
@@ -149,9 +158,13 @@ while 1:
             pygame.quit() 
             exit(0) 
             
+#----------------
+#change section to brain wave patterns
+            
+    #change the event type/event key to brain signal
         if event.type == pygame.KEYDOWN and not keydown:
-            #keydown = True
             if event.key==K_w:
+                #keep keys array
                 keys[0]=True
             elif event.key==K_a:
                 keys[1]=True
@@ -159,11 +172,8 @@ while 1:
                 keys[2]=True
             elif event.key==K_d:
                 keys[3]=True
-            #else:
-                #keydown = False
-                
+        #same thing        
         if event.type == pygame.KEYUP:
-            #keydown =False
             if event.key==pygame.K_w:
                 keys[0]=False
             elif event.key==pygame.K_a:
@@ -173,25 +183,48 @@ while 1:
             elif event.key==pygame.K_d:
                 keys[3]=False
                 
+#------------------
+                
     if angle == 270:
-        posy -= 6
+        if(colorgetTOP == (0, 0, 0, 255)):
+            if(colorgetTOPRIGHT == (0, 0, 0, 255)):
+                if(colorgetTOPLEFT == (0, 0, 0, 255)):
+                    posy -= 6
     if angle == 0:
-        posx -= 6
+        if(colorgetLEFT == (0, 0, 0, 255)):
+            if(colorgetTOPLEFT == (0, 0, 0, 255)):
+                if(colorgetBOTTOMLEFT == (0, 0, 0, 255)):
+                    posx -= 6
     if angle == 180:
-        posx += 6
+        if(colorgetRIGHT == (0, 0, 0, 255)):
+            if(colorgetTOPRIGHT == (0, 0, 0, 255)):
+                if(colorgetBOTTOMRIGHT == (0, 0, 0, 255)):
+                    posx += 6
     if angle == 90:
-        posy += 6
+        if(colorgetBOTTOM == (0, 0, 0, 255)):
+            if(colorgetBOTTOMRIGHT == (0, 0, 0, 255)):
+                if(colorgetBOTTOMLEFT == (0, 0, 0, 255)):
+                    posy += 6
+    
     
     if keys[0]:
-        angle = 270
-        #posy -= 8
+        if(colorgetTOP == (0, 0, 0, 255)):
+            if(colorgetTOPRIGHT == (0, 0, 0, 255)):
+                if(colorgetTOPLEFT == (0, 0, 0, 255)):
+                    angle = 270
     elif keys[2]:
-        angle = 90                              
-        #posy +=8
+        if(colorgetBOTTOM == (0, 0, 0, 255)):
+            if(colorgetBOTTOMRIGHT == (0, 0, 0, 255)):
+                if(colorgetBOTTOMLEFT == (0, 0, 0, 255)):
+                    angle = 90                              
     if keys[1]:
-        angle = 0                                
-        #posx-=8
+        if(colorgetLEFT == (0, 0, 0, 255)):
+            if(colorgetTOPLEFT == (0, 0, 0, 255)):
+                if(colorgetBOTTOMLEFT == (0, 0, 0, 255)):
+                    angle = 0                                
     elif keys[3]:
-        angle = 180                                
-        #posx+=8
+        if(colorgetRIGHT == (0, 0, 0, 255)):
+            if(colorgetTOPRIGHT == (0, 0, 0, 255)):
+                if(colorgetBOTTOMRIGHT == (0, 0, 0, 255)):
+                    angle = 180                                
     clock.tick(60)
