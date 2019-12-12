@@ -8,11 +8,15 @@ screen=pygame.display.set_mode((width, height))
 keys = [False, False, False, False]
 angle = 90
 keydown = False
-posx, posy = 390, 585
+posx, posy = 390, 581
 posx1, posy1 = 390, 410
 posx2, posy2 = 390, 490
 posx3, posy3 = 335, 490
 posx4, posy4 = 445, 490
+<<<<<<< HEAD
+speed = 1
+=======
+>>>>>>> 7928d0647b4633ee6462e379217860c96829498d
 class MySprite(pygame.sprite.Sprite):
     
     def __init__(self, x, y):
@@ -28,8 +32,12 @@ class MySprite(pygame.sprite.Sprite):
         self.images.append(pygame.image.load('resources/images/pacman2.png'))
         self.index = 0
         self.image = self.images[self.index]
+<<<<<<< HEAD
+        self.rect = pygame.Rect(x + 32, y + 32, 63, 63)
+=======
         self.rect = pygame.Rect(x, y, 30, 30)
         
+>>>>>>> 7928d0647b4633ee6462e379217860c96829498d
     def update(self):
         self.index += 1
         if self.index >= len(self.images):
@@ -123,7 +131,11 @@ while 1:
     
     playerrot = pygame.transform.rotate(sprite.image, angle)
     playerpos1 = (posx,posy)
+<<<<<<< HEAD
+    playerpos2 = (posx + 32, posy + 32)
+=======
     playerpos2 = (posx + pygame.Surface.get_size(sprite.image)[0] // 2, posy + pygame.Surface.get_size(sprite.image)[1] // 2)
+>>>>>>> 7928d0647b4633ee6462e379217860c96829498d
     #playerpos1 = (playerpos[0]-playerrot.get_rect().width//2, playerpos[1]-playerrot.get_rect().height//2)
     screen.blit(playerrot, playerpos1)
     
@@ -138,6 +150,15 @@ while 1:
     
     clydepos = (posx4, posy4)
     screen.blit(clyde.image, clydepos)
+<<<<<<< HEAD
+    
+    #pygame.Surface.set_at(movemap, (playerpos2), Color('yellow'))
+    colorgetRIGHT = pygame.Surface.get_at(movemap, ((playerpos2[0] + speed, playerpos2[1])))
+    colorgetTOP = pygame.Surface.get_at(movemap, ((playerpos2[0], playerpos2[1] - speed)))
+    colorgetLEFT = pygame.Surface.get_at(movemap, ((playerpos2[0] - speed, playerpos2[1])))
+    colorgetBOTTOM = pygame.Surface.get_at(movemap, ((playerpos2[0], playerpos2[1] + speed)))
+
+=======
     
     #pygame.Surface.set_at(backdrop, (playerpos2), Color('yellow'))
     colorgetRIGHT = pygame.Surface.get_at(movemap, ((playerpos2[0] + 30, playerpos2[1])))
@@ -150,6 +171,7 @@ while 1:
     colorgetBOTTOMLEFT = pygame.Surface.get_at(movemap, ((playerpos2[0] - 25, playerpos2[1] + 25)))
     colorgetBOTTOMRIGHT = pygame.Surface.get_at(movemap, ((playerpos2[0] + 25, playerpos2[1] + 25)))
     
+>>>>>>> 7928d0647b4633ee6462e379217860c96829498d
     pygame.display.update()
 
     for event in pygame.event.get():
@@ -184,23 +206,37 @@ while 1:
                 keys[3]=False
                 
 #------------------
+    
+    if keys[0]:
+        if(colorgetTOP == (255, 255, 255, 255)):
+            angle = 270
+    elif keys[2]:
+        if(colorgetBOTTOM == (255, 255, 255, 255)):
+            angle = 90                              
+    if keys[1]:
+        if(colorgetLEFT == (255, 255, 255, 255)):
+            angle = 0                                
+    elif keys[3]:
+        if(colorgetRIGHT == (255, 255, 255, 255)):
+            angle = 180    
                 
     if angle == 270:
-        if(colorgetTOP == (0, 0, 0, 255)):
-            if(colorgetTOPRIGHT == (0, 0, 0, 255)):
-                if(colorgetTOPLEFT == (0, 0, 0, 255)):
-                    posy -= 6
+        if(colorgetTOP == (255, 255, 255, 255)):
+            posy -= speed
     if angle == 0:
-        if(colorgetLEFT == (0, 0, 0, 255)):
-            if(colorgetTOPLEFT == (0, 0, 0, 255)):
-                if(colorgetBOTTOMLEFT == (0, 0, 0, 255)):
-                    posx -= 6
+        if(colorgetLEFT == (255, 255, 255, 255)):
+            posx -= speed
     if angle == 180:
-        if(colorgetRIGHT == (0, 0, 0, 255)):
-            if(colorgetTOPRIGHT == (0, 0, 0, 255)):
-                if(colorgetBOTTOMRIGHT == (0, 0, 0, 255)):
-                    posx += 6
+        if(colorgetRIGHT == (255, 255, 255, 255)):
+            posx += speed
     if angle == 90:
+<<<<<<< HEAD
+        if(colorgetBOTTOM == (255, 255, 255, 255)):
+            posy += speed
+    
+                            
+    clock.tick(9000000000000000)
+=======
         if(colorgetBOTTOM == (0, 0, 0, 255)):
             if(colorgetBOTTOMRIGHT == (0, 0, 0, 255)):
                 if(colorgetBOTTOMLEFT == (0, 0, 0, 255)):
@@ -228,3 +264,4 @@ while 1:
                 if(colorgetBOTTOMRIGHT == (0, 0, 0, 255)):
                     angle = 180                                
     clock.tick(60)
+>>>>>>> 7928d0647b4633ee6462e379217860c96829498d
