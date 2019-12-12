@@ -207,4 +207,4 @@ while 1:
             posy += speed
     
                             
-    clock.tick(9000000000000000)
+    clock.tick(60)
