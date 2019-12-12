@@ -3,7 +3,7 @@ from pygame.locals import *
 from pygame import Color
 
 pygame.init()
-width, height = 840, 1080
+width, height = 480, 640
 screen=pygame.display.set_mode((width,height))
 
 backdrop = pygame.image.load("resources/images/backdrop.png")
