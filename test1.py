@@ -10,8 +10,8 @@ def half(tup):
 def generate_pix(img):
     x_tol = 3
     y_tol = 3
-    for xval in (x_tol, img.shape[1] - x_tol):
-        for yval in (y_tol, img.shape[0] - y_tol):
+    for xval in (x_tol, int(img.shape[1]/2), img.shape[1] - x_tol):
+        for yval in (y_tol, int(img.shape[0]/2), img.shape[0] - y_tol):
             try:
                 yield img[xval, yval]
             except IndexError:
@@ -37,7 +37,7 @@ backdrop = cv2.resize(backdrop, half(backdrop.shape))
 pac = cv2.resize(pac, half(pac.shape))
 
 print(backdrop.shape)
-fps_target = 120
+fps_target = 144
 speed = 1
 backy, backx, channels = backdrop.shape
 pacy, pacx, channels = pac.shape
