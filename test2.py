@@ -59,12 +59,26 @@ def touching_wall(img):
 # read images from disk
 backdrop = cv2.imread("resources/images/move map.png")
 backdrop = cv2.cvtColor(backdrop, cv2.COLOR_RGB2RGBA)
-pac = cv2.imread("resources/images/pacman0.png", cv2.IMREAD_UNCHANGED)
-pac = cv2.cvtColor(pac, cv2.COLOR_RGB2RGBA)
+pacs = [cv2.cvtColor(cv2.imread("resources/images/pacman0.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA),
+        cv2.cvtColor(cv2.imread("resources/images/pacman1.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA),
+        cv2.cvtColor(cv2.imread("resources/images/pacman2.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA),
+        cv2.cvtColor(cv2.imread("resources/images/pacman1.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA)]
 
 # resize images
 backdrop = cv2.resize(backdrop, half(backdrop.shape))
-pac = cv2.resize(pac, half(pac.shape))
+for pac in range(len(pacs)):
+    pacs[pac] = cv2.resize(pacs[pac], half(pacs[pac].shape))
+
+pac = pacs[0]
+
+
+def next_pac_frame():
+    while True:
+        for step in pacs:
+            for i in range(10):
+                yield step.copy()
+
+
 """
 for i in range(len(pac)):
     for j in range(len(pac[i])):
@@ -89,13 +103,14 @@ del channels
 
 ghosts = [Ghost(i[0], i[1]) for i in ghost_settings]
 print(ghosts)
+next_pac_frame = next_pac_frame()
 
 while True:
 
     # frame setup
     start_time = time.time() - 0.0001
     frame = backdrop.copy()
-    pac_local = pac.copy()
+    pac_local = next(next_pac_frame)
 
     # read keys
     if keyboard.is_pressed('q'):
@@ -140,7 +155,7 @@ while True:
 
     # fps cap
 
-    while (1.0 / (time.time() - start_time)) > (fps_target):
+    while (1.0 / (time.time() - start_time)) > fps_target:
         time.sleep(0.000001)
 
     # draw the fps and then show the frame
