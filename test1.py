@@ -2,6 +2,33 @@ import cv2
 import time
 import numpy as np
 
+rotate = {
+    90: cv2.ROTATE_90_CLOCKWISE,
+    270: cv2.ROTATE_90_COUNTERCLOCKWISE,
+    0: cv2.ROTATE_180
+}
+
+
+class Ghost:
+    positions = {  # so that all ghosts dont hit each other
+        "Blinky": None,
+        "Clyde": None,
+        "Inky": None,
+        "Pinky": None,
+    }
+
+    def __init__(self, name, start):
+        self.img = cv2.imread("/resources/images/" + name + ".png")
+        self.name = name
+        self.coord = start
+
+    def move(self):
+        self.positions[self.name] = self.coord  # sync positions
+        # do some move action
+
+    def __repr__(self):
+        return self.name + " at " + self.coord.__repr__()
+
 
 # dont touch
 def half(tup):
@@ -31,13 +58,19 @@ def touching_wall(img):
 # read images from disk
 backdrop = cv2.imread("resources/images/move map.png")
 backdrop = cv2.cvtColor(backdrop, cv2.COLOR_RGB2RGBA)
-pac = cv2.imread("resources/images/pacman0.png")
+pac = cv2.imread("resources/images/pacman0.png", cv2.IMREAD_UNCHANGED)
 pac = cv2.cvtColor(pac, cv2.COLOR_RGB2RGBA)
 
 # resize images
 backdrop = cv2.resize(backdrop, half(backdrop.shape))
 pac = cv2.resize(pac, half(pac.shape))
+"""
+for i in range(len(pac)):
+    for j in range(len(pac[i])):
+        if np.array_equal(pac[i][j], np.array([0, 0, 0, 0])):
+            pac[i][j] = np.array([0, 0, 0, 0])"""
 
+# cv2.imshow("test", np.zeros((30, 30, 4)))
 # print(backdrop.shape)
 # initialize vars
 backy, backx, channels = backdrop.shape
@@ -50,13 +83,18 @@ direction = 180
 x = int(backx / 2 - pacx / 2)
 y = 290
 tolerance = 5
+ghost_settings = (("Blinky", (0, 0)), ("Clyde", (0, 50)), ("Inky", (50, 0)), ("Pinky", (50, 50)))
 del channels
+
+ghosts = [Ghost(i[0], i[1]) for i in ghost_settings]
+print(ghosts)
 
 while True:
 
     # frame setup
     start_time = time.time()
     frame = backdrop.copy()
+    pac_local = pac.copy()
 
     # read keys
     key = cv2.waitKey(1)
@@ -93,10 +131,12 @@ while True:
     x = min(x, backx - pacx)
     y = min(y, backy - pacy)
 
-    frame[y:pacy + y, x:pacx + x] = pac
+    pac_local = cv2.rotate(pac_local, rotate[direction]) if direction != 180 else pac_local
+    frame[y:pacy + y, x:pacx + x] = pac_local
     # cv2.rectangle(frame, (x, y), (x + pacx, y + pacy), (0, 255, 0), 1) # enable this to draw the bounding box
 
     # fps cap
+
     while (1.0 / (time.time() - start_time)) > (fps_target + 0.02):
         time.sleep(0.000001)
 
