@@ -1,6 +1,7 @@
 import cv2
 import time
 import numpy as np
+import keyboard
 
 rotate = {
     90: cv2.ROTATE_90_CLOCKWISE,
@@ -39,8 +40,8 @@ def half(tup):
 def generate_pix(img):
     x_tol = 3
     y_tol = 3
-    for xval in (x_tol, int(img.shape[1] / 2), img.shape[1] - x_tol):
-        for yval in (y_tol, int(img.shape[0] / 2), img.shape[0] - y_tol):
+    for xval in (x_tol, int(img.shape[1] / 3), int(2 * img.shape[1] / 3), img.shape[1] - x_tol):
+        for yval in (y_tol, int(img.shape[0] / 3), int(2 * img.shape[0] / 3), img.shape[0] - y_tol):
             try:
                 yield img[xval, yval]
             except IndexError:
@@ -82,7 +83,7 @@ speed = 1
 direction = 180
 x = int(backx / 2 - pacx / 2)
 y = 290
-tolerance = 5
+tolerance = 10
 ghost_settings = (("Blinky", (0, 0)), ("Clyde", (0, 50)), ("Inky", (50, 0)), ("Pinky", (50, 50)))
 del channels
 
@@ -92,23 +93,21 @@ print(ghosts)
 while True:
 
     # frame setup
-    start_time = time.time() - 0.00001
+    start_time = time.time() - 0.0001
     frame = backdrop.copy()
     pac_local = pac.copy()
 
     # read keys
-    key = cv2.waitKey(1)
-    print(key)
-    if key == ord('q'):
+    if keyboard.is_pressed('q'):
         break
-    elif key == ord('w') and not touching_wall(frame[y - tolerance:pacy + y - tolerance, x:pacx + x]):
+    elif keyboard.is_pressed('w') and not touching_wall(frame[y - tolerance:pacy + y - tolerance, x:pacx + x]):
         direction = 90
-    elif key == ord('s') and not touching_wall(frame[y + tolerance:pacy + y + tolerance, x:pacx + x]):
+    elif keyboard.is_pressed('s') and not touching_wall(frame[y + tolerance:pacy + y + tolerance, x:pacx + x]):
         direction = 270
-    elif key == ord('a') and not pacx + x - tolerance < 0 and not touching_wall(
+    elif keyboard.is_pressed('a') and not pacx + x - tolerance < 0 and not touching_wall(
             frame[y:pacy + y, x - tolerance:pacx + x - tolerance]):
         direction = 180
-    elif key == ord('d') and not pacx + x + tolerance > backx and not touching_wall(
+    elif keyboard.is_pressed('d') and not pacx + x + tolerance > backx and not touching_wall(
             frame[y:pacy + y, x + tolerance:pacx + x + tolerance]):
         direction = 0
     else:
@@ -133,12 +132,15 @@ while True:
     y = min(y, backy - pacy)
 
     pac_local = cv2.rotate(pac_local, rotate[direction]) if direction != 180 else pac_local
-    frame[y:pacy + y, x:pacx + x] = pac_local
+    # frame[y:pacy + y, x:pacx + x] = pac_local
+    pac_show = np.zeros((backy, backx, 4), dtype='uint8')  # np.array([[[0, 0, 0, 255]] * backx] * backy, dtype='uint8')
+    pac_show[y:pacy + y, x:pacx + x] = pac_local
+    frame = cv2.addWeighted(frame, 1.0, pac_show, 10.0, 10)
     # cv2.rectangle(frame, (x, y), (x + pacx, y + pacy), (0, 255, 0), 1) # enable this to draw the bounding box
 
     # fps cap
 
-    while (1.0 / (time.time() - start_time)) > (fps_target + 0.02):
+    while (1.0 / (time.time() - start_time)) > (fps_target):
         time.sleep(0.000001)
 
     # draw the fps and then show the frame
@@ -146,3 +148,4 @@ while True:
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
 
     cv2.imshow("roman i want to die", frame)
+    cv2.waitKey(1)
