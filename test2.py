@@ -146,6 +146,11 @@ while True:
     x = min(x, backx - pacx)
     y = min(y, backy - pacy)
 
+    if x == 0:
+        x = backx - pacx
+    elif x == backx - pacx:
+        x = 0
+
     pac_local = cv2.rotate(pac_local, rotate[direction]) if direction != 180 else pac_local
     # frame[y:pacy + y, x:pacx + x] = pac_local
     pac_show = np.zeros((backy, backx, 4), dtype='uint8')  # np.array([[[0, 0, 0, 255]] * backx] * backy, dtype='uint8')
