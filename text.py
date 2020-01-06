@@ -6,7 +6,7 @@ pygame.init()
 width, height = 840, 1080
 screen=pygame.display.set_mode((width, height))
 keys = [False, False, False, False]
-angle = 90
+angle = 180
 keydown = False
 posx, posy = 390, 581
 posx1, posy1 = 390, 410
@@ -14,6 +14,7 @@ posx2, posy2 = 390, 490
 posx3, posy3 = 335, 490
 posx4, posy4 = 445, 490
 speed = 1
+testspeed = 31
 class MySprite(pygame.sprite.Sprite):
     
     def __init__(self, x, y):
@@ -29,7 +30,7 @@ class MySprite(pygame.sprite.Sprite):
         self.images.append(pygame.image.load('resources/images/pacman2.png'))
         self.index = 0
         self.image = self.images[self.index]
-        self.rect = pygame.Rect(x + 32, y + 32, 63, 63)
+        self.rect = pygame.Rect(x + 32, y + 32, 630, 630)
     def update(self):
         self.index += 1
         if self.index >= len(self.images):
@@ -110,8 +111,8 @@ clyde = clyde1(posx4, posy4)
 clock = pygame.time.Clock()
 
 #player = pygame.image.load("resources/images/pacman0.png")
-backdrop = pygame.image.load("resources/images/backdrop.png")
-movemap = pygame.image.load("resources/images/movemap.png")
+backdrop = pygame.image.load("resources/images/move_map.png")
+movemap = pygame.image.load("resources/images/move_map.png")
 
 while 1:
 
@@ -139,12 +140,22 @@ while 1:
     clydepos = (posx4, posy4)
     screen.blit(clyde.image, clydepos)
     
-    #pygame.Surface.set_at(movemap, (playerpos2), Color('yellow'))
-    colorgetRIGHT = pygame.Surface.get_at(movemap, ((playerpos2[0] + speed, playerpos2[1])))
-    colorgetTOP = pygame.Surface.get_at(movemap, ((playerpos2[0], playerpos2[1] - speed)))
-    colorgetLEFT = pygame.Surface.get_at(movemap, ((playerpos2[0] - speed, playerpos2[1])))
-    colorgetBOTTOM = pygame.Surface.get_at(movemap, ((playerpos2[0], playerpos2[1] + speed)))
+    colorgetRIGHT = pygame.Surface.get_at(movemap, ((playerpos2[0] + testspeed, playerpos2[1])))
+    colorgetTOP = pygame.Surface.get_at(movemap, ((playerpos2[0], playerpos2[1] - testspeed)))
+    colorgetLEFT = pygame.Surface.get_at(movemap, ((playerpos2[0] - testspeed, playerpos2[1])))
+    colorgetBOTTOM = pygame.Surface.get_at(movemap, ((playerpos2[0], playerpos2[1] + testspeed)))
+    
+    colorgetTOPRIGHT = pygame.Surface.get_at(movemap, ((playerpos2[0] + testspeed - 2, playerpos2[1] - testspeed)))
+    colorgetTOPLEFT = pygame.Surface.get_at(movemap, ((playerpos2[0] - testspeed + 4, playerpos2[1] - testspeed)))
+    colorgetBOTTOMLEFT = pygame.Surface.get_at(movemap, ((playerpos2[0] - testspeed + 2, playerpos2[1] + testspeed)))
+    colorgetBOTTOMRIGHT = pygame.Surface.get_at(movemap, ((playerpos2[0] + testspeed - 2, playerpos2[1] + testspeed)))
 
+    
+    pygame.Surface.set_at(backdrop, ((playerpos2[0] - testspeed + 4, playerpos2[1] - testspeed)), Color('yellow'))
+    #pygame.Surface.set_at(backdrop, (playerpos2[0] + testspeed - 2, playerpos2[1] - testspeed), Color('yellow'))
+    #pygame.Surface.set_at(movemap, (playerpos2[0] - speed, playerpos2[1]), Color('yellow'))
+    #pygame.Surface.set_at(movemap, (playerpos2[0], playerpos2[1] + speed), Color('yellow'))
+    
     pygame.display.update()
 
     for event in pygame.event.get():
@@ -181,29 +192,37 @@ while 1:
 #------------------
     
     if keys[0]:
-        if(colorgetTOP == (255, 255, 255, 255)):
-            angle = 270
+        if(colorgetTOP == (0, 0, 0, 255)):
+            if(colorgetTOPRIGHT == (0, 0, 0, 255)):
+                if(colorgetTOPLEFT == (0, 0, 0, 255)):
+                    angle = 270
     elif keys[2]:
-        if(colorgetBOTTOM == (255, 255, 255, 255)):
-            angle = 90                              
+        if(colorgetBOTTOM == (0, 0, 0, 255)):
+            if(colorgetBOTTOMLEFT == (0, 0, 0, 255)):
+                if(colorgetBOTTOMRIGHT == (0, 0, 0, 255)):
+                    angle = 90                              
     if keys[1]:
-        if(colorgetLEFT == (255, 255, 255, 255)):
-            angle = 0                                
+        if(colorgetLEFT == (0, 0, 0, 255)):
+            if(colorgetBOTTOMLEFT == (0, 0, 0, 255)):
+                if(colorgetTOPLEFT == (0, 0, 0, 255)):
+                    angle = 0                                
     elif keys[3]:
-        if(colorgetRIGHT == (255, 255, 255, 255)):
-            angle = 180    
+        if(colorgetRIGHT == (0, 0, 0, 255)):
+            if(colorgetTOPRIGHT == (0, 0, 0, 255)):
+                if(colorgetBOTTOMRIGHT == (0, 0, 0, 255)):
+                    angle = 180    
                 
     if angle == 270:
-        if(colorgetTOP == (255, 255, 255, 255)):
+        if(colorgetTOP == (0, 0, 0, 255)):
             posy -= speed
     if angle == 0:
-        if(colorgetLEFT == (255, 255, 255, 255)):
+        if(colorgetLEFT == (0, 0, 0, 255)):
             posx -= speed
     if angle == 180:
-        if(colorgetRIGHT == (255, 255, 255, 255)):
+        if(colorgetRIGHT == (0, 0, 0, 255)):
             posx += speed
     if angle == 90:
-        if(colorgetBOTTOM == (255, 255, 255, 255)):
+        if(colorgetBOTTOM == (0, 0, 0, 255)):
             posy += speed
     
                             
