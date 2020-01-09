@@ -64,7 +64,8 @@ pacs = [cv2.cvtColor(cv2.imread("./resources/images/pacman0.png", cv2.IMREAD_UNC
         cv2.cvtColor(cv2.imread("./resources/images/pacman1.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA)]
 
 # resize images
-backdrop = cv2.resize(backdrop, half(backdrop.shape))
+backdrop = cv2.resize(backdrop, (480, 640))# half(backdrop.shape))
+print(half(backdrop.shape))
 for pac in range(len(pacs)):
     pacs[pac] = cv2.resize(pacs[pac], half(pacs[pac].shape))
 
@@ -96,7 +97,7 @@ speed = 1
 direction = 180
 x = int(backx / 2 - pacx / 2)
 y = 290
-tolerance = 5
+tolerance = 10
 ghost_settings = (("Blinky", (0, 0)), ("Clyde", (0, 50)), ("Inky", (50, 0)), ("Pinky", (50, 50)))
 del channels
 
@@ -165,7 +166,7 @@ while True:
         time.sleep(0.000001)
 
     # draw the fps and then show the frame
-    frame = cv2.putText(frame, f'FPS: {round(1.0 / (time.time() - start_time))}', (0, 15),
+    frame = cv2.putText(frame, 'FPS: {}'.format(round(1.0 / (time.time() - start_time))), (0, 15),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
 
     cv2.imshow("roman i want to die", frame)
