@@ -164,8 +164,9 @@ while True:
         time.sleep(0.000001)
 
     # draw the fps and then show the frame
-    frame = cv2.putText(frame, f'FPS: {round(1.0 / (time.time() - start_time))}', (0, 15),
+    frame = cv2.putText(frame, 'FPS: {}'.format(round(1.0/(time.time() - start_time))), (0, 15),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
 
     cv2.imshow("roman i want to die", frame)
     cv2.waitKey(1)
+

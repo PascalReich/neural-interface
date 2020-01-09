@@ -8,13 +8,13 @@ screen=pygame.display.set_mode((width, height))
 keys = [False, False, False, False]
 angle = 180
 keydown = False
-posx, posy = 390, 581
+posx, posy = 395, 588
 posx1, posy1 = 390, 410
 posx2, posy2 = 390, 490
 posx3, posy3 = 335, 490
 posx4, posy4 = 445, 490
 speed = 1
-testspeed = 31
+testspeed = 30
 class MySprite(pygame.sprite.Sprite):
     
     def __init__(self, x, y):
@@ -30,7 +30,7 @@ class MySprite(pygame.sprite.Sprite):
         self.images.append(pygame.image.load('resources/images/pacman2.png'))
         self.index = 0
         self.image = self.images[self.index]
-        self.rect = pygame.Rect(x + 32, y + 32, 630, 630)
+        self.rect = pygame.Rect(x, y, 51, 51)
     def update(self):
         self.index += 1
         if self.index >= len(self.images):
@@ -124,7 +124,7 @@ while 1:
     
     playerrot = pygame.transform.rotate(sprite.image, angle)
     playerpos1 = (posx,posy)
-    playerpos2 = (posx + 32, posy + 32)
+    playerpos2 = (posx + 26, posy + 26)
     #playerpos1 = (playerpos[0]-playerrot.get_rect().width//2, playerpos[1]-playerrot.get_rect().height//2)
     screen.blit(playerrot, playerpos1)
     
@@ -145,14 +145,21 @@ while 1:
     colorgetLEFT = pygame.Surface.get_at(movemap, ((playerpos2[0] - testspeed, playerpos2[1])))
     colorgetBOTTOM = pygame.Surface.get_at(movemap, ((playerpos2[0], playerpos2[1] + testspeed)))
     
-    colorgetTOPRIGHT = pygame.Surface.get_at(movemap, ((playerpos2[0] + testspeed - 2, playerpos2[1] - testspeed)))
-    colorgetTOPLEFT = pygame.Surface.get_at(movemap, ((playerpos2[0] - testspeed + 4, playerpos2[1] - testspeed)))
-    colorgetBOTTOMLEFT = pygame.Surface.get_at(movemap, ((playerpos2[0] - testspeed + 2, playerpos2[1] + testspeed)))
-    colorgetBOTTOMRIGHT = pygame.Surface.get_at(movemap, ((playerpos2[0] + testspeed - 2, playerpos2[1] + testspeed)))
+    colorgetTOPRIGHTleft = pygame.Surface.get_at(movemap, ((playerpos2[0] + testspeed - 1, playerpos2[1] - testspeed + 0)))
+    colorgetTOPRIGHTright = pygame.Surface.get_at(movemap, ((playerpos2[0] + testspeed, playerpos2[1] - testspeed + 1)))
+    
+    colorgetTOPLEFTleft = pygame.Surface.get_at(movemap, ((playerpos2[0] - testspeed, playerpos2[1] - testspeed + 1)))
+    colorgetTOPLEFTright = pygame.Surface.get_at(movemap, ((playerpos2[0] - testspeed + 1, playerpos2[1] - testspeed)))
+    
+    colorgetBOTTOMLEFTleft = pygame.Surface.get_at(movemap, ((playerpos2[0] - testspeed, playerpos2[1] + testspeed - 1)))
+    colorgetBOTTOMLEFTright = pygame.Surface.get_at(movemap, ((playerpos2[0] - testspeed + 1, playerpos2[1] + testspeed)))
+    
+    colorgetBOTTOMRIGHTleft = pygame.Surface.get_at(movemap, ((playerpos2[0] + testspeed - 1, playerpos2[1] + testspeed)))
+    colorgetBOTTOMRIGHTright = pygame.Surface.get_at(movemap, ((playerpos2[0] + testspeed, playerpos2[1] + testspeed - 1)))
 
     
-    pygame.Surface.set_at(backdrop, ((playerpos2[0] - testspeed + 4, playerpos2[1] - testspeed)), Color('yellow'))
-    #pygame.Surface.set_at(backdrop, (playerpos2[0] + testspeed - 2, playerpos2[1] - testspeed), Color('yellow'))
+    #pygame.Surface.set_at(backdrop, ((playerpos2[0] - testspeed, playerpos2[1] - testspeed + 1)), Color('yellow'))
+    #pygame.Surface.set_at(backdrop, (playerpos2[0] + testspeed, playerpos2[1] - testspeed), Color('yellow'))
     #pygame.Surface.set_at(movemap, (playerpos2[0] - speed, playerpos2[1]), Color('yellow'))
     #pygame.Surface.set_at(movemap, (playerpos2[0], playerpos2[1] + speed), Color('yellow'))
     
@@ -181,7 +188,7 @@ while 1:
         #same thing        
         if event.type == pygame.KEYUP:
             if event.key==pygame.K_w:
-                keys[0]=False
+                 keys[0]=False
             elif event.key==pygame.K_a:
                 keys[1]=False
             elif event.key==pygame.K_s:
@@ -193,23 +200,23 @@ while 1:
     
     if keys[0]:
         if(colorgetTOP == (0, 0, 0, 255)):
-            if(colorgetTOPRIGHT == (0, 0, 0, 255)):
-                if(colorgetTOPLEFT == (0, 0, 0, 255)):
+            if(colorgetTOPRIGHTleft == (0, 0, 0, 255)):
+                if(colorgetTOPLEFTright == (0, 0, 0, 255)):
                     angle = 270
     elif keys[2]:
         if(colorgetBOTTOM == (0, 0, 0, 255)):
-            if(colorgetBOTTOMLEFT == (0, 0, 0, 255)):
-                if(colorgetBOTTOMRIGHT == (0, 0, 0, 255)):
+            if(colorgetBOTTOMLEFTright == (0, 0, 0, 255)):
+                if(colorgetBOTTOMRIGHTleft == (0, 0, 0, 255)):
                     angle = 90                              
     if keys[1]:
         if(colorgetLEFT == (0, 0, 0, 255)):
-            if(colorgetBOTTOMLEFT == (0, 0, 0, 255)):
-                if(colorgetTOPLEFT == (0, 0, 0, 255)):
+            if(colorgetBOTTOMLEFTleft == (0, 0, 0, 255)):
+                if(colorgetTOPLEFTleft == (0, 0, 0, 255)):
                     angle = 0                                
     elif keys[3]:
         if(colorgetRIGHT == (0, 0, 0, 255)):
-            if(colorgetTOPRIGHT == (0, 0, 0, 255)):
-                if(colorgetBOTTOMRIGHT == (0, 0, 0, 255)):
+            if(colorgetTOPRIGHTright == (0, 0, 0, 255)):
+                if(colorgetBOTTOMRIGHTright == (0, 0, 0, 255)):
                     angle = 180    
                 
     if angle == 270:
