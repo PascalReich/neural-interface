@@ -58,12 +58,26 @@ def touching_wall(img):
 # read images from disk
 backdrop = cv2.imread("resources/images/move map.png")
 backdrop = cv2.cvtColor(backdrop, cv2.COLOR_RGB2RGBA)
-pac = cv2.imread("resources/images/pacman0.png", cv2.IMREAD_UNCHANGED)
-pac = cv2.cvtColor(pac, cv2.COLOR_RGB2RGBA)
+pacs = [cv2.cvtColor(cv2.imread("./resources/images/pacman0.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA),
+        cv2.cvtColor(cv2.imread("./resources/images/pacman1.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA),
+        cv2.cvtColor(cv2.imread("./resources/images/pacman2.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA),
+        cv2.cvtColor(cv2.imread("./resources/images/pacman1.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA)]
 
 # resize images
 backdrop = cv2.resize(backdrop, half(backdrop.shape))
-pac = cv2.resize(pac, half(pac.shape))
+for pac in range(len(pacs)):
+    pacs[pac] = cv2.resize(pacs[pac], half(pacs[pac].shape))
+
+pac = pacs[0]
+
+
+def next_pac_frame():
+    while True:
+        for step in pacs:
+            for i in range(10):
+                yield step.copy()
+
+
 """
 for i in range(len(pac)):
     for j in range(len(pac[i])):
@@ -88,13 +102,14 @@ del channels
 
 ghosts = [Ghost(i[0], i[1]) for i in ghost_settings]
 print(ghosts)
+next_pac_frame = next_pac_frame()
 
 while True:
 
     # frame setup
     start_time = time.time() - 0.00001
     frame = backdrop.copy()
-    pac_local = pac.copy()
+    pac_local = next(next_pac_frame)
 
     # read keys
     key = cv2.waitKey(1)
@@ -132,8 +147,16 @@ while True:
     x = min(x, backx - pacx)
     y = min(y, backy - pacy)
 
+    if x == 0:
+        x = backx - pacx
+    elif x == backx - pacx:
+        x = 0
+
     pac_local = cv2.rotate(pac_local, rotate[direction]) if direction != 180 else pac_local
-    frame[y:pacy + y, x:pacx + x] = pac_local
+    # frame[y:pacy + y, x:pacx + x] = pac_local
+    pac_show = np.zeros((backy, backx, 4), dtype='uint8')  # np.array([[[0, 0, 0, 255]] * backx] * backy, dtype='uint8')
+    pac_show[y:pacy + y, x:pacx + x] = pac_local
+    frame = cv2.addWeighted(frame, 1.0, pac_show, 10.0, 10)
     # cv2.rectangle(frame, (x, y), (x + pacx, y + pacy), (0, 255, 0), 1) # enable this to draw the bounding box
 
     # fps cap
