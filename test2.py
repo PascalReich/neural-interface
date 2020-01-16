@@ -66,7 +66,7 @@ def touching_wall(img):
 
 
 # read images from disk -- normalize them and add transparency
-movemap = cv2.imread("resources/images/move map.png")
+movemap = cv2.imread("resources/images/move_map.png")
 movemap = cv2.cvtColor(movemap, cv2.COLOR_RGB2RGBA)
 backdrop = cv2.imread("resources/images/backdrop.png")
 backdrop = cv2.cvtColor(backdrop, cv2.COLOR_RGB2RGBA)
