@@ -8,6 +8,40 @@ rotate = {
     0: cv2.ROTATE_180
 }
 
+class PowerUp:
+    
+    brightness = [1, 0]
+    
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        
+    def draw(self):
+        
+        pass
+    
+    def blink(self, img):
+        if self.brightness[1] is 0:
+            #darken
+        elif self.brightness[1] is 1:
+            #brighten/remove dark
+        pass
+    
+    @classmethod
+    def update_blink(cls):
+        if cls.brightness[0] is 1:
+            cls.brightness[1] = 0
+        elif cls.brightness[0] is 0:
+            cls.brightness[1] = 1
+        
+        
+class Dot:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+    def draw(self):
+        
+        pass
 
 class Ghost:
     positions = {  # so that all ghosts dont hit each other
@@ -28,6 +62,10 @@ class Ghost:
 
     def __repr__(self):
         return self.name + " at " + self.coord.__repr__()
+    
+    def draw(self, frame):
+        
+        pass
 
 
 # dont touch
@@ -54,9 +92,8 @@ def touching_wall(img):
             return True
     return False
 
-
 # read images from disk
-movemap = cv2.imread("resources/images/move map.png")
+movemap = cv2.imread("resources/images/move_map.png")
 movemap = cv2.cvtColor(movemap, cv2.COLOR_RGB2RGBA)
 backdrop = cv2.imread("resources/images/backdrop.png")
 backdrop = cv2.cvtColor(backdrop, cv2.COLOR_RGB2RGBA)
@@ -64,8 +101,14 @@ pacs = [cv2.cvtColor(cv2.imread("./resources/images/pacman0.png", cv2.IMREAD_UNC
         cv2.cvtColor(cv2.imread("./resources/images/pacman1.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA),
         cv2.cvtColor(cv2.imread("./resources/images/pacman2.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA),
         cv2.cvtColor(cv2.imread("./resources/images/pacman1.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA)]
+pacdot = cv2.imread("resources/images/pacdot.png")
+pacdot = cv2.cvtColor(pacdot, cv2.COLOR_RGB2RGBA)
+powerup = cv2.imread("resources/images/powerup.png")
+powerup = cv2.cvtColor(powerup, cv2.COLOR_RGB2RGBA)
 
 # resize images
+powerup = cv2.resize(powerup, half(powerup.shape))
+pacdot = cv2.resize(pacdot, half(pacdot.shape))
 movemap = cv2.resize(movemap, (480, 640))# half(backdrop.shape))
 backdrop = cv2.resize(backdrop, (480, 640)) #810,1080
 #print(half(movemap.shape))
@@ -116,7 +159,7 @@ while True:
     frame = movemap.copy()
     frame1 = backdrop.copy()
     pac_local = next(next_pac_frame)
-
+    
     # read keys
     key = cv2.waitKey(1)
     #print(key)
@@ -160,6 +203,11 @@ while True:
         x = backx - pacx
     elif x == backx - pacx:
         x = 0
+    
+    
+    #loop through intervals of the spaces between dots on one axis on black spaces then in that loop while testing for one x value make another similar loop but with y variable
+    
+    #make a for loop with len that draws the dots and tracks if a certain dot has been on pacmans loc and if so then stop drawing that dot's number using else variable
 
     pac_local = cv2.rotate(pac_local, rotate[direction]) if direction != 180 else pac_local
     # frame[y:pacy + y, x:pacx + x] = pac_local
@@ -177,5 +225,4 @@ while True:
     frame1 = cv2.putText(frame1, 'FPS: {}'.format(round(1.0 / (time.time() - start_time))), (0, 15),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
 
-    cv2.imshow("roman", frame)
     cv2.imshow("roman", frame1)
