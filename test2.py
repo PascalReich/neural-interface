@@ -12,7 +12,8 @@ rotate = {
 
 #
 class Ghost:
-    positions = {  # so that all ghosts dont hit each other
+    # so that all ghosts dont hit collide - to understand what this really does look up OOP static vars python
+    positions = {
         "Blinky": None,
         "Clyde": None,
         "Inky": None,
