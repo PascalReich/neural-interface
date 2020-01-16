@@ -66,7 +66,9 @@ def touching_wall(img):
 
 
 # read images from disk -- normalize them and add transparency
-backdrop = cv2.imread("resources/images/move map.png")
+movemap = cv2.imread("resources/images/move map.png")
+movemap = cv2.cvtColor(movemap, cv2.COLOR_RGB2RGBA)
+backdrop = cv2.imread("resources/images/backdrop.png")
 backdrop = cv2.cvtColor(backdrop, cv2.COLOR_RGB2RGBA)
 pacs = [cv2.cvtColor(cv2.imread("resources/images/pacman0.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA),
         cv2.cvtColor(cv2.imread("resources/images/pacman1.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA),
@@ -74,6 +76,7 @@ pacs = [cv2.cvtColor(cv2.imread("resources/images/pacman0.png", cv2.IMREAD_UNCHA
         cv2.cvtColor(cv2.imread("resources/images/pacman1.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA)]
 
 # resize images
+movemap = cv2.resize(movemap, half(movemap.shape))
 backdrop = cv2.resize(backdrop, half(backdrop.shape))
 for pac in range(len(pacs)):
     pacs[pac] = cv2.resize(pacs[pac], half(pacs[pac].shape))
@@ -131,15 +134,15 @@ while True:
         #       the bottom left y (pacy + y) and the same with x. I add a little bit opf tolerance, although its more
         #       of a buffer just in case, and i might remove it later
 
-    elif keyboard.is_pressed('w') and not touching_wall(frame[y - tolerance:pacy + y - tolerance, x:pacx + x]):
+    elif keyboard.is_pressed('w') and not touching_wall(movemap[y - tolerance:pacy + y - tolerance, x:pacx + x]):
         direction = 90
-    elif keyboard.is_pressed('s') and not touching_wall(frame[y + tolerance:pacy + y + tolerance, x:pacx + x]):
+    elif keyboard.is_pressed('s') and not touching_wall(movemap[y + tolerance:pacy + y + tolerance, x:pacx + x]):
         direction = 270
     elif keyboard.is_pressed('a') and not pacx + x - tolerance < 0 and not touching_wall(  # i guess i try to make sure it doesnt go out of bound but i have other checks so i might remove this
-            frame[y:pacy + y, x - tolerance:pacx + x - tolerance]):
+            movemap[y:pacy + y, x - tolerance:pacx + x - tolerance]):
         direction = 180
     elif keyboard.is_pressed('d') and not pacx + x + tolerance > backx and not touching_wall(
-            frame[y:pacy + y, x + tolerance:pacx + x + tolerance]):
+            movemap[y:pacy + y, x + tolerance:pacx + x + tolerance]):
         direction = 0
     else:
         pass  # other key -- ignore
@@ -147,13 +150,13 @@ while True:
     # actually move pacman
     # we need to make sure they dont just try and turn in an illegal direction but also never move in one either,
     # so we need to perform similar checks
-    if direction == 0 and not touching_wall(frame[y:pacy + y, x + speed:pacx + x + speed]):
+    if direction == 0 and not touching_wall(movemap[y:pacy + y, x + speed:pacx + x + speed]):
         x += speed
-    elif direction == 90 and not touching_wall(frame[y - speed:pacy + y - speed, x:pacx + x]):
+    elif direction == 90 and not touching_wall(movemap[y - speed:pacy + y - speed, x:pacx + x]):
         y -= speed
-    elif direction == 180 and not touching_wall(frame[y:pacy + y, x - speed:pacx + x - speed]):
+    elif direction == 180 and not touching_wall(movemap[y:pacy + y, x - speed:pacx + x - speed]):
         x -= speed
-    elif direction == 270 and not touching_wall(frame[y + speed:pacy + y + speed, x:pacx + x]):
+    elif direction == 270 and not touching_wall(movemap[y + speed:pacy + y + speed, x:pacx + x]):
         y += speed
     else:
         pass
