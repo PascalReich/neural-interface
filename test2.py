@@ -3,40 +3,49 @@ import time
 import numpy as np
 import keyboard
 
+# this maps the degrees to rotate pacman with the special code that the cv2.rotate function reqiures
 rotate = {
     90: cv2.ROTATE_90_CLOCKWISE,
     270: cv2.ROTATE_90_COUNTERCLOCKWISE,
     0: cv2.ROTATE_180
 }
 
-
+#
 class Ghost:
-    positions = {  # so that all ghosts dont hit each other
+    # so that all ghosts dont hit collide - to understand what this really does look up OOP static vars python
+    positions = {
         "Blinky": None,
         "Clyde": None,
         "Inky": None,
         "Pinky": None,
     }
 
+    # make ghost instance
     def __init__(self, name, start):
-        self.img = cv2.imread("/resources/images/" + name + ".png")
+        self.img = cv2.imread("/resources/images/" + name + ".png")  # read image from disk
         self.name = name
         self.coord = start
 
+    # move the ghost
     def move(self):
         self.positions[self.name] = self.coord  # sync positions
         # do some move action
 
-    def __repr__(self):
+    # draw ghost
+    def draw(self, frame):
+        pass  # draw i can add this
+
+    def __repr__(self):  # this makes stuff nice when i print() it
         return self.name + " at " + self.coord.__repr__()
 
 
-# dont touch
+# dont touch, make a tuple(static list) half its size: (100, 100) -> (50, 50)
 def half(tup):
     return int(tup[1] / 2), int(tup[0] / 2)
 
 
-# complicated
+# assuming and image size of maybe 25x25,
+# yield all the values at x = 0+xtol (3), 25 - xtol (22) and y = 0+ytol (3), 25-ytol (22)
 def generate_pix(img):
     x_tol = 3
     y_tol = 3
@@ -48,7 +57,7 @@ def generate_pix(img):
                 pass
 
 
-# what do you think it does?
+# using the color values yielded from the generator above, check if any are blue (0, 0, 0, 255) (a,r,g,b)
 def touching_wall(img):
     for _ in generate_pix(img):
         if not np.array_equal(_, np.asarray([0, 0, 0, 255])):
@@ -56,8 +65,10 @@ def touching_wall(img):
     return False
 
 
-# read images from disk
-backdrop = cv2.imread("resources/images/move map.png")
+# read images from disk -- normalize them and add transparency
+movemap = cv2.imread("resources/images/move_map.png")
+movemap = cv2.cvtColor(movemap, cv2.COLOR_RGB2RGBA)
+backdrop = cv2.imread("resources/images/backdrop.png")
 backdrop = cv2.cvtColor(backdrop, cv2.COLOR_RGB2RGBA)
 pacs = [cv2.cvtColor(cv2.imread("resources/images/pacman0.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA),
         cv2.cvtColor(cv2.imread("resources/images/pacman1.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA),
@@ -65,13 +76,14 @@ pacs = [cv2.cvtColor(cv2.imread("resources/images/pacman0.png", cv2.IMREAD_UNCHA
         cv2.cvtColor(cv2.imread("resources/images/pacman1.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA)]
 
 # resize images
+movemap = cv2.resize(movemap, half(movemap.shape))
 backdrop = cv2.resize(backdrop, half(backdrop.shape))
 for pac in range(len(pacs)):
     pacs[pac] = cv2.resize(pacs[pac], half(pacs[pac].shape))
 
 pac = pacs[0]
 
-
+# generate the next pacman frame (image) when asked
 def next_pac_frame():
     while True:
         for step in pacs:
@@ -109,38 +121,47 @@ while True:
 
     # frame setup
     start_time = time.time() - 0.0001
-    frame = backdrop.copy()
-    pac_local = next(next_pac_frame)
+    frame = backdrop.copy()  # make copies, not references
+    pac_local = next(next_pac_frame)  # get the next pacman frame from the generator defined above
 
     # read keys
     if keyboard.is_pressed('q'):
-        break
-    elif keyboard.is_pressed('w') and not touching_wall(frame[y - tolerance:pacy + y - tolerance, x:pacx + x]):
+        break  # stop the game
+
+        # Explaining touching wall touching_wall(frame[y:pacy + y, x:pacx + x] for keys
+        #       When changing direction up and down (w and s) we really only need to be strict about y and its values.
+        #       frame[y:pacy + y, x:pacx + x] selects the color values from the top left y (y) to
+        #       the bottom left y (pacy + y) and the same with x. I add a little bit opf tolerance, although its more
+        #       of a buffer just in case, and i might remove it later
+
+    elif keyboard.is_pressed('w') and not touching_wall(movemap[y - tolerance:pacy + y - tolerance, x:pacx + x]):
         direction = 90
-    elif keyboard.is_pressed('s') and not touching_wall(frame[y + tolerance:pacy + y + tolerance, x:pacx + x]):
+    elif keyboard.is_pressed('s') and not touching_wall(movemap[y + tolerance:pacy + y + tolerance, x:pacx + x]):
         direction = 270
-    elif keyboard.is_pressed('a') and not pacx + x - tolerance < 0 and not touching_wall(
-            frame[y:pacy + y, x - tolerance:pacx + x - tolerance]):
+    elif keyboard.is_pressed('a') and not pacx + x - tolerance < 0 and not touching_wall(  # i guess i try to make sure it doesnt go out of bound but i have other checks so i might remove this
+            movemap[y:pacy + y, x - tolerance:pacx + x - tolerance]):
         direction = 180
     elif keyboard.is_pressed('d') and not pacx + x + tolerance > backx and not touching_wall(
-            frame[y:pacy + y, x + tolerance:pacx + x + tolerance]):
+            movemap[y:pacy + y, x + tolerance:pacx + x + tolerance]):
         direction = 0
     else:
-        pass
+        pass  # other key -- ignore
 
     # actually move pacman
-    if direction == 0 and not touching_wall(frame[y:pacy + y, x + speed:pacx + x + speed]):
+    # we need to make sure they dont just try and turn in an illegal direction but also never move in one either,
+    # so we need to perform similar checks
+    if direction == 0 and not touching_wall(movemap[y:pacy + y, x + speed:pacx + x + speed]):
         x += speed
-    elif direction == 90 and not touching_wall(frame[y - speed:pacy + y - speed, x:pacx + x]):
+    elif direction == 90 and not touching_wall(movemap[y - speed:pacy + y - speed, x:pacx + x]):
         y -= speed
-    elif direction == 180 and not touching_wall(frame[y:pacy + y, x - speed:pacx + x - speed]):
+    elif direction == 180 and not touching_wall(movemap[y:pacy + y, x - speed:pacx + x - speed]):
         x -= speed
-    elif direction == 270 and not touching_wall(frame[y + speed:pacy + y + speed, x:pacx + x]):
+    elif direction == 270 and not touching_wall(movemap[y + speed:pacy + y + speed, x:pacx + x]):
         y += speed
     else:
         pass
 
-    # make sure he stays on the map
+    # make sure he stays on the map (piecewise functions?)
     x = max(x, 0)
     y = max(y, 0)
     x = min(x, backx - pacx)
@@ -151,15 +172,20 @@ while True:
     elif x == backx - pacx:
         x = 0
 
+    # rotate pacman in the correct direction using the special code from the rotate dictionary above unless
+    # the direction is 180 in which case we dont need to rotate it at all
     pac_local = cv2.rotate(pac_local, rotate[direction]) if direction != 180 else pac_local
     # frame[y:pacy + y, x:pacx + x] = pac_local
+    # make an empty, transparent backdrop so we can merge it correctly
     pac_show = np.zeros((backy, backx, 4), dtype='uint8')  # np.array([[[0, 0, 0, 255]] * backx] * backy, dtype='uint8')
+    # put the pacman on the backdrop
     pac_show[y:pacy + y, x:pacx + x] = pac_local
+    # TODO do calls to ghosts.draw() passing along pac_show as arg
+    # merge them observing transparency
     frame = cv2.addWeighted(frame, 1.0, pac_show, 10.0, 10)
     # cv2.rectangle(frame, (x, y), (x + pacx, y + pacy), (0, 255, 0), 1) # enable this to draw the bounding box
 
-    # fps cap
-
+    # fps cap -- (1.0 / (time.time() - start_time)) calcs fps and so while that is large than the cap, chill.
     while (1.0 / (time.time() - start_time)) > fps_target:
         time.sleep(0.000001)
 
@@ -167,6 +193,7 @@ while True:
     frame = cv2.putText(frame, 'FPS: {}'.format(round(1.0/(time.time() - start_time))), (0, 15),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
 
+    # show frame
     cv2.imshow("roman i want to die", frame)
-    cv2.waitKey(1)
+    cv2.waitKey(1)  # this step is annoying but it acts as a flush so the frame shows up -- idk j accept it
 
