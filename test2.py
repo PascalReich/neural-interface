@@ -22,9 +22,11 @@ class Ghost:
 
     # make ghost instance
     def __init__(self, name, start):
-        self.img = cv2.imread("/resources/images/" + name + ".png")  # read image from disk
+        print("/resources/images/ghosts/" + name + "Left.png")
+        self.img = cv2.cvtColor(cv2.imread("resources/images/" + name + "Left.png"), cv2.COLOR_RGB2RGBA)  # read image from disk
         self.name = name
         self.coord = start
+        self.size = self.img.shape
 
     # move the ghost
     def move(self):
@@ -32,8 +34,8 @@ class Ghost:
         # do some move action
 
     # draw ghost
-    def draw(self, frame):
-        pass  # draw i can add this
+    def draw(self, bg):
+        bg[self.coord[1]:self.coord[1] + self.size[1], self.coord[0]:self.coord[0] + self.size[0]] = self.img
 
     def __repr__(self):  # this makes stuff nice when i print() it
         return self.name + " at " + self.coord.__repr__()
@@ -180,7 +182,9 @@ while True:
     pac_show = np.zeros((backy, backx, 4), dtype='uint8')  # np.array([[[0, 0, 0, 255]] * backx] * backy, dtype='uint8')
     # put the pacman on the backdrop
     pac_show[y:pacy + y, x:pacx + x] = pac_local
-    # TODO do calls to ghosts.draw() passing along pac_show as arg
+    # do calls to ghosts.draw() passing along pac_show as arg
+    for ghost in ghosts:
+        ghost.draw(pac_show)
     # merge them observing transparency
     frame = cv2.addWeighted(frame, 1.0, pac_show, 10.0, 10)
     # cv2.rectangle(frame, (x, y), (x + pacx, y + pacy), (0, 255, 0), 1) # enable this to draw the bounding box
