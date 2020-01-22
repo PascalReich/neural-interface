@@ -107,6 +107,8 @@ pacdot = cv2.imread("resources/images/pacdot.png")
 pacdot = cv2.cvtColor(pacdot, cv2.COLOR_RGB2RGBA)
 powerup = cv2.imread("resources/images/powerup.png")
 powerup = cv2.cvtColor(powerup, cv2.COLOR_RGB2RGBA)
+dotmap = cv2.imread("resources/images/dotmap.png")
+dotmap = cv2.cvtColor(dotmap, cv2.COLOR_RGB2RGBA)
 
 # resize images
 powerup = cv2.resize(powerup, half(powerup.shape))
@@ -208,7 +210,9 @@ while True:
     
     
     #loop through intervals of the spaces between dots on one axis on black spaces then in that loop while testing for one x value make another similar loop but with y variable
-    
+
+
+
     #make a for loop with len that draws the dots and tracks if a certain dot has been on pacmans loc and if so then stop drawing that dot's number using else variable
 
     pac_local = cv2.rotate(pac_local, rotate[direction]) if direction != 180 else pac_local
