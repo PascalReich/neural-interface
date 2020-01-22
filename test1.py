@@ -23,8 +23,10 @@ class PowerUp:
     def blink(self, img):
         if self.brightness[1] is 0:
             #darken
+            pass
         elif self.brightness[1] is 1:
             #brighten/remove dark
+            pass
         pass
     
     @classmethod

@@ -1,4 +1,4 @@
-import pygame
+"""import pygame
 from pygame.locals import *
 import math
 
@@ -233,4 +233,8 @@ while 1:
             posy += speed
     
                             
-    clock.tick(60)
+    clock.tick(60) """
+
+p = ([1, 2], [3, 4])
+a = p[0]
+print(a[1])
