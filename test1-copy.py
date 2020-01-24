@@ -89,7 +89,10 @@ def addDots(fra):
     for pelx in range(start[0], end[0], 20):
         for pely in range(start[1], end[1], 19):
             if np.array_equal(dotmap[pely][pelx], np.asarray([0, 0, 0, 255])):
-                fra = cv2.circle(fra, (pelx, pely), 2, (100, 100, 100))
+                if dotEaten is False:
+                    fra = cv2.circle(fra, (pelx, pely), 2, (150, 180, 180), -1)
+                else:
+                    pass
 
     return True
 
