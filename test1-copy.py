@@ -89,7 +89,7 @@ def addDots(fra):
     for pelx in range(start[0], end[0], 20):
         for pely in range(start[1], end[1], 19):
             if np.array_equal(dotmap[pely][pelx], np.asarray([0, 0, 0, 255])):
-                fra = cv2.circle(fra, (pelx, pely), 2, (150, 180, 180), -1)
+                fra = cv2.circle(fra, (pelx, pely), 3, (150, 180, 180), -1)
     return True
 
 
@@ -146,7 +146,7 @@ while True:
     elif key == ord('s') and not touching_wall(movemap[y + tolerance:pacy + y + tolerance, x:pacx + x]):
         direction = 270
     elif key == ord('a') and not pacx + x - tolerance < 0 and not touching_wall(
-            movemap[y:pacy + y, x - tolerance:pacx + x - tolerance]):
+            movemap[y:pacy + y, x - tolerance if x - tolerance >= 0 else 0:pacx + x - tolerance]):
         direction = 180
     elif key == ord('d') and not pacx + x + tolerance > backx and not touching_wall(
             movemap[y:pacy + y, x + tolerance:pacx + x + tolerance]):
