@@ -90,7 +90,11 @@ def addDots(fra):
         for pely in range(start[1], end[1], 19):
             if np.array_equal(dotmap[pely][pelx], np.asarray([0, 0, 0, 255])):
 <<<<<<< HEAD
+<<<<<<< HEAD
                 fra = cv2.circle(fra, (pelx, pely), 2, (120, 150, 150), -1)
+=======
+                fra = cv2.circle(fra, (pelx, pely), 3, (150, 180, 180), -1)
+>>>>>>> 52755aca04e8e4329f4a55250ef3b157025f6c57
 =======
                 fra = cv2.circle(fra, (pelx, pely), 3, (150, 180, 180), -1)
 >>>>>>> 52755aca04e8e4329f4a55250ef3b157025f6c57
