@@ -21,7 +21,7 @@ class Ghost:
     }
 
     def __init__(self, name, start):
-        self.img = cv2.imread("/resources/images/" + name + ".png")
+        self.img = cv2.imread("/resources/images/" + name + "Left.png")
         self.name = name
         self.coord = start
 
@@ -89,7 +89,7 @@ def addDots(fra):
     for pelx in range(start[0], end[0], 20):
         for pely in range(start[1], end[1], 19):
             if np.array_equal(dotmap[pely][pelx], np.asarray([0, 0, 0, 255])):
-                fra = cv2.circle(fra, (pelx, pely), 2, (150, 180, 180), -1)
+                fra = cv2.circle(fra, (pelx, pely), 2, (120, 150, 150), -1)
     return True
 
 
@@ -168,6 +168,7 @@ while True:
         y += speed
     else:
         pass
+    
 
     # make sure he stays on the map
     x = max(x, 0)
