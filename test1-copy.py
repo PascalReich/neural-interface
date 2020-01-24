@@ -89,7 +89,11 @@ def addDots(fra):
     for pelx in range(start[0], end[0], 20):
         for pely in range(start[1], end[1], 19):
             if np.array_equal(dotmap[pely][pelx], np.asarray([0, 0, 0, 255])):
+<<<<<<< HEAD
                 fra = cv2.circle(fra, (pelx, pely), 2, (120, 150, 150), -1)
+=======
+                fra = cv2.circle(fra, (pelx, pely), 3, (150, 180, 180), -1)
+>>>>>>> 52755aca04e8e4329f4a55250ef3b157025f6c57
     return True
 
 
@@ -131,7 +135,7 @@ while True:
 
     # frame setup
     start_time = time.time() - 0.00001
-    frame = movemap.copy()
+    movemap = movemap.copy()
     frame1 = backdrop.copy()
     pac_local = next(next_pac_frame)
     drawDots = executor.submit(addDots, frame1)
@@ -141,15 +145,15 @@ while True:
     # print(key)
     if key == ord('q'):
         break
-    elif key == ord('w') and not touching_wall(frame[y - tolerance:pacy + y - tolerance, x:pacx + x]):
+    elif key == ord('w') and not touching_wall(movemap[y - tolerance:pacy + y - tolerance, x:pacx + x]):
         direction = 90
-    elif key == ord('s') and not touching_wall(frame[y + tolerance:pacy + y + tolerance, x:pacx + x]):
+    elif key == ord('s') and not touching_wall(movemap[y + tolerance:pacy + y + tolerance, x:pacx + x]):
         direction = 270
     elif key == ord('a') and not pacx + x - tolerance < 0 and not touching_wall(
-            frame[y:pacy + y, x - tolerance:pacx + x - tolerance]):
+            movemap[y:pacy + y, x - tolerance if x - tolerance >= 0 else 0:pacx + x - tolerance]):
         direction = 180
     elif key == ord('d') and not pacx + x + tolerance > backx and not touching_wall(
-            frame[y:pacy + y, x + tolerance:pacx + x + tolerance]):
+            movemap[y:pacy + y, x + tolerance:pacx + x + tolerance]):
         direction = 0
     else:
         pass
@@ -158,13 +162,13 @@ while True:
     #    break
 
     # actually move pacman
-    if direction == 0 and not touching_wall(frame[y:pacy + y, x + speed:pacx + x + speed]):
+    if direction == 0 and not touching_wall(movemap[y:pacy + y, x + speed:pacx + x + speed]):
         x += speed
-    elif direction == 90 and not touching_wall(frame[y - speed:pacy + y - speed, x:pacx + x]):
+    elif direction == 90 and not touching_wall(movemap[y - speed:pacy + y - speed, x:pacx + x]):
         y -= speed
-    elif direction == 180 and not touching_wall(frame[y:pacy + y, x - speed:pacx + x - speed]):
+    elif direction == 180 and not touching_wall(movemap[y:pacy + y, x - speed:pacx + x - speed]):
         x -= speed
-    elif direction == 270 and not touching_wall(frame[y + speed:pacy + y + speed, x:pacx + x]):
+    elif direction == 270 and not touching_wall(movemap[y + speed:pacy + y + speed, x:pacx + x]):
         y += speed
     else:
         pass
@@ -225,7 +229,7 @@ while True:
 
     """
     frame1 = cv2.circle(frame1, (100, 0), 2, (100, 100, 100))
-    
+
     for pelx in xs:
         for yval in range(ys[0], ys[len(ys)-1], 12):
             if np.array_equal(frame[yval][pelx], np.asarray([0, 0, 0, 255])) and np.array_equal(frame[yval - 10][pelx], np.asarray([0, 0, 0, 255])) and np.array_equal(frame[yval + 10][pelx], np.asarray([0, 0, 0, 255])):
