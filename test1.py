@@ -143,7 +143,7 @@ pacy, pacx, channels = pac.shape
 
 ## GLOBAL SETTINGS ##
 fps_target = 144
-speed = 1
+speed = 2
 direction = 90
 x = int(backx / 2 - pacx / 2)
 y = 349
