@@ -25,7 +25,8 @@ class Ghost:
         self.name = name
         self.coord = start
 
-    def move(self, map):
+    """def move(self, map): bro tyler idk wut u did but this code is not even close to anything resembling something that will execute without error
+    
         self.positions[self.name] = self.coord  # sync positions
         if direction == 0 and not touching_wall(map[y:pacy + y, x + speed:pacx + x + speed]):
             x += speed
@@ -37,11 +38,11 @@ class Ghost:
             y += speed
         else:
             pass
-        # do some move action
+        # do some move action"""
 
     def __repr__(self):
         return self.name + " at " + self.coord.__repr__()
-    
+
 
 # dont touch
 def half(tup):
@@ -78,17 +79,17 @@ pacs = [cv2.cvtColor(cv2.imread("./resources/images/pacman0.png", cv2.IMREAD_UNC
         cv2.cvtColor(cv2.imread("./resources/images/pacman2.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA),
         cv2.cvtColor(cv2.imread("./resources/images/pacman1.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA)]
 blinkyimg = [
-        cv2.cvtColor(cv2.imread("./resources/images/BlinkyLeft.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA),
-        cv2.cvtColor(cv2.imread("./resources/images/BlinkyRight.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA)]
+    cv2.cvtColor(cv2.imread("./resources/images/BlinkyLeft.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA),
+    cv2.cvtColor(cv2.imread("./resources/images/BlinkyRight.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA)]
 inkyimg = [
-        cv2.cvtColor(cv2.imread("./resources/images/InkyLeft.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA),
-        cv2.cvtColor(cv2.imread("./resources/images/InkyRight.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA)]
+    cv2.cvtColor(cv2.imread("./resources/images/InkyLeft.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA),
+    cv2.cvtColor(cv2.imread("./resources/images/InkyRight.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA)]
 clydeimg = [
-        cv2.cvtColor(cv2.imread("./resources/images/ClydeLeft.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA),
-        cv2.cvtColor(cv2.imread("./resources/images/ClydeRight.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA)]
+    cv2.cvtColor(cv2.imread("./resources/images/ClydeLeft.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA),
+    cv2.cvtColor(cv2.imread("./resources/images/ClydeRight.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA)]
 pinkyimg = [
-        cv2.cvtColor(cv2.imread("./resources/images/PinkyLeft.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA),
-        cv2.cvtColor(cv2.imread("./resources/images/PinkyRight.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA)]
+    cv2.cvtColor(cv2.imread("./resources/images/PinkyLeft.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA),
+    cv2.cvtColor(cv2.imread("./resources/images/PinkyRight.png", cv2.IMREAD_UNCHANGED), cv2.COLOR_RGB2RGBA)]
 
 dotmap = cv2.imread("resources/images/dotmap.png")
 dotmap = cv2.cvtColor(dotmap, cv2.COLOR_RGB2RGBA)
@@ -105,33 +106,29 @@ for pac in range(len(pacs)):
 pac = pacs[0]
 pelpos = []
 
+
 def initDots():
     start = (25, 75)
     end = (465, 585)
     for pelx in range(start[0], end[0], 20):
         for pely in range(start[1], end[1], 19):
             if np.array_equal(dotmap[pely][pelx], np.asarray([0, 0, 0, 255])):
-                pelpos.append((pelx, pely, 1))
+                pelpos.append([pelx, pely, 1])
 
-def peltest(a, b, c):
-    if (x - a)*(x - a) + (y - b)*(y - b) < c*c:
+
+def peltest(dotx, doty):
+    if x <= dotx <= x + pac.shape[1] and y <= doty <= y + pac.shape[0]:
         return True
     else:
         return False
-    
+
 
 def addDots(fra):
-    #k = 0
-    for k in pelpos:
-        c = list(k)
-        #print(k)
-        if c[2] is 1:
-            fra = cv2.circle(fra, (c[0], c[1]), 3, (150, 180, 180), -1)
-            #print(peltest(c[0],c[1],8))
-            if peltest(c[0], c[1], 5) is True:
-                #print(c)
-                #print(pelpos(k))
-                pelpos[k][2] = 0
+    for pel in pelpos:
+        if pel[2] is 1:
+            fra = cv2.circle(fra, (pel[0], pel[1]), 3, (150, 180, 180), -1)
+            if peltest(pel[0], pel[1]) is True:
+                pel[2] = 0
         else:
             pass
     return True
@@ -168,7 +165,7 @@ ghost_settings = (("Blinky", (390, 410)), ("Clyde", (390, 490)), ("Inky", (335, 
 del channels
 
 ghosts = [Ghost(i[0], i[1]) for i in ghost_settings]
-#print(Ghost[1])
+# print(Ghost[1])
 next_pac_frame = next_pac_frame()
 
 initDots()
@@ -211,9 +208,8 @@ while True:
         y += speed
     else:
         pass
-    
-    #for ghost
-    
+
+    # for ghost
 
     # make sure he stays on the map
     x = max(x, 0)
@@ -239,8 +235,8 @@ while True:
     pac_show = np.zeros((backy, backx, 4), dtype='uint8')  # np.array([[[0, 0, 0, 255]] * backx] * backy, dtype='uint8')
     pac_show[y:pacy + y, x:pacx + x] = pac_local
 
-        
-    futures.wait([drawDots])
+    futures.wait([drawDots], return_when=futures.ALL_COMPLETED)
+    if drawDots.exception(): print(drawDots.exception())
     frame1 = cv2.addWeighted(frame1, 1.0, pac_show, 10.0, 10)
     # cv2.rectangle(frame, (x, y), (x + pacx, y + pacy), (0, 255, 0), 1) # enable this to draw the bounding box
 
@@ -248,7 +244,6 @@ while True:
 
     # xs = (25, 60, 110, 160, 215, 265, 315, 365, 415, 450)
     # ys = (80, 150, 205, 260, 310, 360, 420, 470, 525, 580)
-
 
     # print(np.array_equal(frame1, frame))
 
