@@ -95,7 +95,7 @@ pelpos = []
 score = 0
 
 def initPowerUps():
-    
+    pass
 
 def initDots():
     start = (25, 75)
