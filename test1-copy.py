@@ -78,14 +78,10 @@ pinkyimg = [
 dotmap = cv2.imread("resources/images/dotmap.png")
 dotmap = cv2.cvtColor(dotmap, cv2.COLOR_RGB2RGBA)
 
-powerup = cv2.imread("resources/images/powerup.png")
-powerup = cv2.cvtColor(powerup, cv2.COLOR_RGB2RGBA)
-
 # resize images
 movemap = cv2.resize(movemap, (480, 640))  # half(backdrop.shape))
 backdrop = cv2.resize(backdrop, (480, 640))  # 810,1080
 dotmap = cv2.resize(dotmap, (480, 640))
-powerup = cv2.resize(powerup, half(powerup.shape))
 
 for pac in range(len(pacs)):
     pacs[pac] = cv2.resize(pacs[pac], half(pacs[pac].shape))
@@ -94,8 +90,26 @@ pac = pacs[0]
 pelpos = []
 score = 0
 
-def initPowerUps():
-    pass
+powerUpPos = [[25, 113, 1], [445, 113, 1], [25, 474, 1], [445, 474, 1]]
+poweredUp = False
+
+startime = 0
+
+def addPowerUps(fra):
+    global startime
+    global poweredUp
+    for powerup in powerUpPos:
+        if powerup[2] is 1:
+            fra = cv2.circle(fra, (powerup[0], powerup[1]), 9, (150, 180, 180), -1)
+            if peltest(powerup[0], powerup[1]) is True:
+                powerup[2] = 0
+                poweredUp = True
+                startime = time.time() + 10
+            if time.time() >= startime:
+                poweredUp = False
+        else:
+            pass    
+    return True
 
 def initDots():
     start = (25, 75)
@@ -205,11 +219,18 @@ while True:
 
     start = (25, 75)
     end = (465, 585)
-
+    
+    while poweredUp is True:
+        #do power up code
+        pass
+    
+    print(poweredUp)
 
     pac_local = cv2.rotate(pac_local, rotate[direction]) if direction != 180 else pac_local
     pac_show = np.zeros((backy, backx, 4), dtype='uint8')
     pac_show[y:pacy + y, x:pacx + x] = pac_local
+    
+    addPowerUps(frame1)
 
     futures.wait([drawDots], return_when=futures.ALL_COMPLETED)
     if drawDots.exception(): print(drawDots.exception())
