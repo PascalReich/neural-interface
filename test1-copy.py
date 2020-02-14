@@ -220,9 +220,9 @@ while True:
     start = (25, 75)
     end = (465, 585)
     
-    while poweredUp is True:
+    #while poweredUp is True:
         #do power up code
-        pass
+        #pass
     
     print(poweredUp)
 
