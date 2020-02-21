@@ -220,7 +220,7 @@ while True:
     start = (25, 75)
     end = (465, 585)
     
-    #while poweredUp is True:
+    #if poweredUp:
         #do power up code
         #pass
     
