@@ -99,15 +99,38 @@ dotmap = cv2.cvtColor(dotmap, cv2.COLOR_RGB2RGBA)
 movemap = cv2.resize(movemap, (480, 640))  # half(backdrop.shape))
 backdrop = cv2.resize(backdrop, (480, 640))  # 810,1080
 dotmap = cv2.resize(dotmap, (480, 640))
-# print(half(movemap.shape))
+
 for pac in range(len(pacs)):
     pacs[pac] = cv2.resize(pacs[pac], half(pacs[pac].shape))
 
 pac = pacs[0]
 pelpos = []
+score = 0
+
+powerUpPos = [[25, 113, 1], [445, 113, 1], [25, 474, 1], [445, 474, 1]]
+poweredUp = False
+
+startime = 0
 
 
-def addDots(fra):
+def addPowerUps(fra):
+    global startime
+    global poweredUp
+    for powerup in powerUpPos:
+        if powerup[2] is 1:
+            fra = cv2.circle(fra, (powerup[0], powerup[1]), 9, (150, 180, 180), -1)
+            if peltest(powerup[0], powerup[1]) is True:
+                powerup[2] = 0
+                poweredUp = True
+                startime = time.time() + 10
+            if time.time() >= startime:
+                poweredUp = False
+        else:
+            pass
+    return True
+
+
+def initDots():
     start = (25, 75)
     end = (465, 585)
 
@@ -125,10 +148,12 @@ def peltest(dotx, doty):
 
 
 def addDots(fra):
+    global score
     for pel in pelpos:
         if pel[2] is 1:
             fra = cv2.circle(fra, (pel[0], pel[1]), 3, (150, 180, 180), -1)
             if peltest(pel[0], pel[1]) is True:
+                score += 1
                 pel[2] = 0
         else:
             pass
@@ -168,6 +193,8 @@ del channels
 ghosts = [Ghost(i[0], i[1]) for i in ghost_settings]
 # print(ghosts)
 next_pac_frame = next_pac_frame()
+
+initDots()
 
 while True:
 
@@ -229,11 +256,10 @@ while True:
     # rotate pacman in the correct direction using the special code from the rotate dictionary above unless
     # the direction is 180 in which case we dont need to rotate it at all
     pac_local = cv2.rotate(pac_local, rotate[direction]) if direction != 180 else pac_local
-    # frame[y:pacy + y, x:pacx + x] = pac_local
-    # make an empty, transparent backdrop so we can merge it correctly
-    pac_show = np.zeros((backy, backx, 4), dtype='uint8')  # np.array([[[0, 0, 0, 255]] * backx] * backy, dtype='uint8')
-    # put the pacman on the backdrop
+    pac_show = np.zeros((backy, backx, 4), dtype='uint8')
     pac_show[y:pacy + y, x:pacx + x] = pac_local
+
+    addPowerUps(frame1)
 
     futures.wait([drawDots], return_when=futures.ALL_COMPLETED)
     if drawDots.exception(): print(drawDots.exception())
@@ -243,13 +269,10 @@ while True:
     # fps cap -- (1.0 / (time.time() - start_time)) calcs fps and so while that is large than the cap, chill.
     while (1.0 / (time.time() - start_time)) > fps_target:
         time.sleep(0.000001)
-        print(1.0 / (time.time() - start_time))
 
     # draw the fps and then show the frame
     frame1 = cv2.putText(frame1, 'FPS: {}'.format(round(1.0 / (time.time() - start_time))), (0, 15),
-                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
-
-
-    # cv2.imshow("roman", frame)
+                         cv2.FONT_HERSHEY_DUPLEX, 0.5, (255, 255, 255))
+    frame1 = cv2.putText(frame1, 'Score: {}'.format(score), (backx-100, 15), cv2.FONT_HERSHEY_DUPLEX, 0.5, (255, 255, 255))
     cv2.imshow("roman", frame1)
     cv2.waitKey(1)
