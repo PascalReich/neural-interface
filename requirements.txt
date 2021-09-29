@@ -1,2 +1,5 @@
 numpy
 cv2
+tensorflow
+pandas
+scipy
