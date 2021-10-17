@@ -47,10 +47,13 @@ def main():
     time.sleep(5)
     for i in range(10):
         board.get_board_data() # clear buffer
-        print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n") # clear terminal
-        cur_word = random.choice(termBank) # choose word
+        print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"* 3) # clear terminal
+        next_word = random.choice(termBank)
+        while cur_word == next_word:
+            next_word = random.choice(termBank)# choose word
+        cur_word = next_word
         print(cur_word)  # display word
-        time.sleep(1)  # wait to gather data
+        time.sleep(2)  # wait to gather data
         data = board.get_board_data()  # collect data
 
         # now we are off the clock
@@ -91,11 +94,8 @@ def main():
 
         cur_step += 1
 
-        time.sleep(.1)
+        time.sleep(10)
 
-
-
-    
     board.stop_stream()
     board.release_session()
 
@@ -109,7 +109,7 @@ def main():
 
     train_data = np.array(final_data)
 
-    DataFilter.write_file(train_data, 'test.csv', 'w')
+    DataFilter.write_file(train_data, f'out/test-{time.time()}.csv', 'w')
 
     print(data)
 
