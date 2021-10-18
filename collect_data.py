@@ -45,9 +45,9 @@ def main():
 
     print("Starting in 5 seconds")
     time.sleep(5)
-    for i in range(10):
+    for i in range(25):
         board.get_board_data() # clear buffer
-        print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"* 3) # clear terminal
+        print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"* 5) # clear terminal
         next_word = random.choice(termBank)
         while cur_word == next_word:
             next_word = random.choice(termBank)# choose word
@@ -94,7 +94,7 @@ def main():
 
         cur_step += 1
 
-        time.sleep(10)
+        time.sleep(5)
 
     board.stop_stream()
     board.release_session()
