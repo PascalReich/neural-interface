@@ -8,6 +8,30 @@ import brainflow
 from brainflow.board_shim import BoardShim, BrainFlowInputParams
 from brainflow.data_filter import DataFilter, FilterTypes, AggOperations
 
+import pygame
+from pygame.locals import *
+
+bgcolor = (251, 240, 217)
+
+pygame.init()
+screen = pygame.display.set_mode(flags=pygame.FULLSCREEN)
+pygame.display.set_caption('Collect Data')
+screen.fill(bgcolor)
+
+font = pygame.font.Font(None, 100)
+
+
+def display(str):
+    screen.fill(bgcolor)
+
+    text = font.render(str, True, (0, 0, 0), bgcolor)
+    textRect = text.get_rect()
+    textRect.centerx = screen.get_rect().centerx
+    textRect.centery = screen.get_rect().centery
+
+    screen.blit(text, textRect)
+    pygame.display.update()
+    
 
 def main():
     # BoardShim.enable_dev_board_logger()
@@ -40,12 +64,14 @@ def main():
     board = BoardShim(board_id, params)
     board.prepare_session()
     print("connected")
+    display("connected")
 
     board.start_stream(45000)
 
     print("Starting in 5 seconds")
+    display("Starting in 5 seconds")
     time.sleep(5)
-    for i in range(25):
+    while True:
         board.get_board_data() # clear buffer
         print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"* 5) # clear terminal
         next_word = random.choice(termBank)
@@ -53,8 +79,10 @@ def main():
             next_word = random.choice(termBank)# choose word
         cur_word = next_word
         print(cur_word)  # display word
+        display(cur_word)
         time.sleep(2)  # wait to gather data
         data = board.get_board_data()  # collect data
+        display("")
 
         # now we are off the clock
 
@@ -93,8 +121,45 @@ def main():
         # clean up
 
         cur_step += 1
+        
+        pygame.event.pump()
+        keys = pygame.key.get_pressed()
+        if keys[K_ESCAPE]:
+            display("Saving Session")
+            break
+            
 
-        time.sleep(5)
+        end  = time.time() + 5
+        wait = False
+        
+        while time.time() < end:
+            pygame.event.pump()
+            keys = pygame.key.get_pressed()
+            if keys[K_SPACE]:
+                wait = True
+                display("Pausing")
+                time.sleep(1)
+                break
+                
+        while wait:
+            display("Paused. Press SPACE to unpause")
+            pygame.event.pump()
+            keys = pygame.key.get_pressed()
+            if keys[K_SPACE]:
+                display("Unpausing in 3 seconds")
+                time.sleep(2)
+                display("")
+                time.sleep(1)
+                break
+            
+            
+        pygame.event.pump()
+        keys = pygame.key.get_pressed()
+        if keys[K_ESCAPE]:
+            display("Saving Session")
+            break
+                
+                
 
     board.stop_stream()
     board.release_session()
@@ -108,10 +173,14 @@ def main():
     print(final_data)
 
     train_data = np.array(final_data)
+    
+    file = f'out/test-{time.time()}.csv'
 
-    DataFilter.write_file(train_data, f'out/test-{time.time()}.csv', 'w')
+    DataFilter.write_file(train_data, file, 'w')
 
     print(data)
+    
+    print(f"saved to {file}")
 
 
 if __name__ == "__main__":

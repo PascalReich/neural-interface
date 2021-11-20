@@ -4,11 +4,11 @@ from tensorflow.keras.layers import *
 from scipy.signal import butter, lfilter
 import pandas as pd
 import numpy as np
-import np_utils
-
+from tensorflow.keras.utils import to_categorical
+from sklearn.model_selection import train_test_split
 
 #my_data = np.array(pd.read_csv("test.csv").values)
-my_data = np.genfromtxt('test.csv', delimiter='\t')
+my_data = np.genfromtxt('out/tom1.csv', delimiter='\t')
 print(my_data)
 
 
@@ -75,11 +75,12 @@ while lineIndex < my_data.shape[0]:
 imageDirectory = np.transpose(imageDirectory, (2, 0, 1))
 imageDirectory = np.delete(imageDirectory, 0, 0)
 answerDirectory = np.delete(answerDirectory, 0, 0)
-answerDirectory = np_utils.to_categorical(answerDirectory)
+answerDirectory = to_categorical(answerDirectory)
 
+print(answerDirectory)
 
 X_train, X_test, y_train, y_test = train_test_split(
-    imageDirectory, answerDirectory, test_size=0.3)
+    imageDirectory, answerDirectory, test_size=0.5)
 
 # Build Model
 model = Sequential()
@@ -90,7 +91,9 @@ model.add(MaxPooling1D(3))
 model.add(GlobalAveragePooling1D())
 model.add(Dense(50, activation='relu'))
 model.add(Dropout(0.2))
-model.add(Dense(2, activation='softmax'))
+model.add(Dense(4, activation='softmax'))
+
+model.summary()
 
 model.compile(loss='binary_crossentropy',
               optimizer='adam',
@@ -99,3 +102,5 @@ model.compile(loss='binary_crossentropy',
 # Train Model
 model.fit(X_train, y_train, validation_data=(
     X_test, y_test), batch_size=100, epochs=300)
+
+model.save('models/tom3')
