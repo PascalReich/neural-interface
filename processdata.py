@@ -8,7 +8,7 @@ from tensorflow.keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
 
 #my_data = np.array(pd.read_csv("test.csv").values)
-my_data = np.genfromtxt('out/tom1.csv', delimiter='\t')
+my_data = np.genfromtxt('out/test-1637467751.3347135.csv', delimiter='\t')
 print(my_data)
 
 
