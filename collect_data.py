@@ -42,7 +42,7 @@ def main():
     num_steps = 15
     cur_step = 0
     cur_word = ""
-    termBank = ["LEFT", "RIGHT", "UP", "DOWN"]
+    termBank = ["LEFT WARD", "RIGHT SIDE", "UP TOP", "DOWN LOW"]
 
     next_display = time.time() + 15
 
@@ -129,7 +129,7 @@ def main():
             break
             
 
-        end  = time.time() + 5
+        end  = time.time() + 3
         wait = False
         
         while time.time() < end:
